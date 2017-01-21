@@ -19,40 +19,40 @@
  *
  */
 metadata {
-	definition (name: "Monoprice Recessed Sensor", namespace: "gkl-sf", author: "gkl_sf") {
+	definition (name: "Monoprice Z-Wave Plus Recessed Sensor", namespace: "gkl-sf", author: "gkl_sf") {
 		capability "Battery"
 		capability "Contact Sensor"
 		capability "Sensor"
 		capability "Tamper Alert"
 		capability "Configuration"
-        
-        fingerprint type: "0701", mfr: "0109", prod: "2022", model: "2201", cc:"5E,98", sec:"86,72,5A,85,59,73,80,71,84,7A,20"        
+
+        fingerprint type: "0701", mfr: "0109", prod: "2022", model: "2201", cc:"5E,98", sec:"86,72,5A,85,59,73,80,71,84,7A,20"
     /*
-    
+
     Command Classes:
-    
+
     0x85: Association V2
     0x59: Association Grp Info V2
     0x80: Battery
     0x5A: Device Reset Locally
     0x7A: Firmware Update Md V2
-    0x72: Manufacturer Specific V2          
+    0x72: Manufacturer Specific V2
     0x71: Notification V4 (ST V3)
     0x73: Powerlevel
-    0x98: Security    
+    0x98: Security
     0x86: Version V2 (ST V1)
     0x84: Wake Up V2
     0x5E: Z Wave Plus Info
-    
+
     */
-         
+
 	}
 
 	simulator {
 	}
 
 	tiles(scale: 2) {
-    
+
         multiAttributeTile(name:"contact", type:"generic", width:6, height:4, canChangeIcon: true) {
             tileAttribute("device.contact", key: "PRIMARY_CONTROL") {
                 attributeState "open", label: '${name}', icon:"st.contact.contact.open", backgroundColor:"#ffa81e"
@@ -63,13 +63,13 @@ metadata {
 		valueTile("battery", "device.battery", decoration: "flat", width: 2, height: 2) {
 			state "battery", label:'${currentValue}% battery', unit:"%"
 		}
-        
+
 		valueTile("tamper", "device.tamper", decoration: "flat", width: 2, height: 2) {
 			state "tamper", label:'Tamper:\n${currentValue}'
-		}           
-        
+		}
+
 		main "contact"
-		details(["contact", "battery", "tamper"])        
+		details(["contact", "battery", "tamper"])
 	}
 }
 
@@ -78,11 +78,11 @@ def parse(String description) {
 	if (description.startsWith("Err 106")) {
 		if (state.sec) {
 			log.debug "Err 106"
-		} 
+		}
         else {
 			result = createEvent(name: "secureInclusion", value: "failed", descriptionText: "Failed to complete security key exchange", isStateChange: true)
 		}
-	} 
+	}
     else {
 		def cmd = zwave.parse(description, [0x80: 1, 0x84: 2, 0x71: 3, 0x72: 2])
 		if (cmd) {
@@ -110,7 +110,7 @@ def zwaveEvent(physicalgraph.zwave.commands.notificationv3.NotificationReport cm
             return createEvent(name: "contact", value: "open", descriptionText: "Door is open", isStateChange: true)
         }
         else if (cmd.event == 0x17) {
-            return createEvent(name: "contact", value: "closed", descriptionText: "Door is closed", isStateChange: true)        
+            return createEvent(name: "contact", value: "closed", descriptionText: "Door is closed", isStateChange: true)
         }
         else {
             log.debug "Unknown contact event: $cmd.event"
@@ -121,13 +121,13 @@ def zwaveEvent(physicalgraph.zwave.commands.notificationv3.NotificationReport cm
             return createEvent(name: "tamper", value: "detected", descriptionText: "Tamper detected", isStateChange: true)
         }
         else if (cmd.event == 0x00) {
-            return createEvent(name: "tamper", value: "clear", descriptionText: "Tamper cleared", isStateChange: true)        
+            return createEvent(name: "tamper", value: "clear", descriptionText: "Tamper cleared", isStateChange: true)
         }
         else {
             log.debug "Unknown tamper event: $cmd.event"
         }
-    }    
-        
+    }
+
     else {
         log.debug "Unknown notificationType: $cmd.notificationType event: $cmd.event"
     }
