@@ -2,6 +2,7 @@
  *  Virtual Device Sync
  *
  *  Copyright 2016 Eric Maycock (erocm123)
+ *  https://github.com/erocm123/SmartThingsPublic/blob/master/smartapps/erocm123/virtual-device-sync.src/virtual-device-sync.groovy
  *
  *
  *  Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
